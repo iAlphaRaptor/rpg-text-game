@@ -43,56 +43,70 @@ def parse(player, commands):
             return res.get_key(x, SYNONYMS)
     return None
 
+def listToObj(obj, attrs):
+    i = 0
+    for attr, value in obj.__dict__.items():
+        setattr(obj , attr, attrs[i])
+        i += 1
+    return obj
+
 def jsonToList(obj):
     values = []
     for x, y in obj.items():
         values.append(y)
-    return values
+    return values[1:]
 
 def loadGame():
-    found = False
-    with open("RPG_game_saves.json", "r") as file:
-        saves = json.load(file)
+    if os.stat("RPG_game_saves.json").st_size == 0:
+        printOut("No games saved on this computer.")
+    else:
+        found = False
+        with open("RPG_game_saves.json", "r+") as file:
+            saves = json.load(file)
 
-    printOut("What is the name of the save?")
-    saveName = input(">>> ")
+        printOut("What is the name of the save?")
+        saveName = input(">>> ")
 
-    while found == False:
-        for attr, value in saves.items():
-            if attr == saveName:
-                found = True
+        while found == False:
+            for attr, value in saves.items():
+                if attr == saveName:
+                    found = True
 
-        if not found:
-            printOut("Save name not found, try again?")
-            answer = input(">>> ").lower()
-            if answer not in ["yes", "y", "ye"]:
-                found = "End"
-            else:
-                printOut("What is the name of the save?")
-                saveName = input(">>> ")
-
-        if found == True:
-            targetPlayer = saves[saveName][0]
-            targetMap = saves[saveName][1]
-
-            playerList = []
-            for attr in list(targetPlayer.items())[1:]:
-                if attr[0] == "inventory":
-                    pass
-                elif attr[0] == "weapon":
-                    pass
-                elif attr[0] == "shield":
-                    if attr[1] == False:
-                        playerList.append(False)
-                    else:
-                        values = jsonToList(attr[1])[1:]
-                        print(values)
-                        i = 0
-                        add = res.Shield(values[0], values[1], values[2], values[3], values[4], values[5], values[6])
-                        for attr, value in add.__dict__.items():
-                            print(attr, value)
+            if not found:
+                printOut("Save name not found, try again?")
+                answer = input(">>> ").lower()
+                if answer not in ["yes", "y", "ye"]:
+                    found = "End"
                 else:
-                    playerList.append(attr[1])
+                    printOut("What is the name of the save?")
+                    saveName = input(">>> ")
+
+            if found == True:
+                targetPlayer = saves[saveName][0]
+                targetMap = saves[saveName][1]
+
+                playerList = []
+                for attr in list(targetPlayer.items())[1:]:
+                    if attr[0] == "inventory":
+                        for item in attr[1]:
+                            values = jsonToList(item)
+                            add = listToObj(res.Shield(), values)
+                            playerList.append(add)
+                    elif attr[0] == "weapon":
+                        values = jsonToList(attr[1])
+                        add = listToObj(res.Weapon(), values)
+                        playerList.append(add)
+                    elif attr[0] == "shield":
+                        if attr[1] == False:
+                            playerList.append(False)
+                        else:
+                            values = jsonToList(attr[1])
+                            add = listToObj(res.Shield(), values)
+                            playerList.append(add)
+                    else:
+                        playerList.append(attr[1])
+
+                print(playerList)
 
 
     return False
@@ -141,7 +155,7 @@ def saveGame(player):
         saveNameAvaiable = False
 
     while not saveNameAvaiable:
-        with open("RPG_game_saves.json", "r") as file:
+        with open("RPG_game_saves.json", "r+") as file:
             saves = json.load(file)
             for name, save in saves.items():
                 if name == saveName:
@@ -194,7 +208,7 @@ def saveGame(player):
             playerDict[attr] = temp
 
     if os.stat("RPG_game_saves.json").st_size != 0:
-        with open("RPG_game_saves.json", "r") as file:
+        with open("RPG_game_saves.json", "r+") as file:
             loaded = json.load(file)
             for x, y in loaded.items():
                 loaded[x] = y
@@ -204,7 +218,7 @@ def saveGame(player):
     else:
         add = json.dumps({saveName : [playerDict, jsonMap]}, indent=4)
 
-    with open("RPG_game_saves.json", "w") as file:
+    with open("RPG_game_saves.json", "w+") as file:
         file.write(add)
 
 def printOut(*args, pause=0.03, startNL=False, endNL=True):
