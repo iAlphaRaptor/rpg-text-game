@@ -91,10 +91,6 @@ def loadGame():
                         add = res.Shield(values[0], values[1], values[2], values[3], values[4], values[5], values[6])
                         for attr, value in add.__dict__.items():
                             print(attr, value)
-                        #for x in vars(add):
-                        #    print(x)
-                        #    add[x] = values[i]
-                        #    i += 1
                 else:
                     playerList.append(attr[1])
 
