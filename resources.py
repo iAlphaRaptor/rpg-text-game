@@ -32,9 +32,7 @@ def coordsToIndex(coords):
     return coords[0]*5 + coords[1]
 
 def jsonToInstance(jsonList): ## Returns an instance of the object from a json dict
-    print(jsonList)
-    target = jsonList[0]
-    print(target, type(target))
+    target = jsonList[0]["class"]
     if target == "Shield":
         return Shield()
     if target == "Weapon":

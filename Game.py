@@ -46,7 +46,7 @@ def parse(player, commands):
 def listToObj(obj, attrs):
     i = 0
     for attr, value in obj.__dict__.items():
-        setattr(obj , attr, attrs[i])
+        setattr(obj, attr, attrs[i])
         i += 1
     return obj
 
@@ -84,13 +84,18 @@ def loadGame():
             if found == True:
                 targetPlayer = saves[saveName][0]
                 targetMap = saves[saveName][1]
+
+                ## Load player data
                 playerList = []
                 for attr in list(targetPlayer.items())[1:]:
                     if attr[0] == "inventory":
+                        temp = []
                         for item in attr[1]:
                             values = jsonToList(item)
-                            add = listToObj(res.jsonToInstance(attr[1]), values)
-                            playerList.append(add)
+                            obj = res.jsonToInstance([item])
+                            add = listToObj(obj, values)
+                            temp.append(add)
+                        playerList.append(temp)
                     elif attr[0] == "weapon":
                         values = jsonToList(attr[1])
                         add = listToObj(res.Weapon(), values[1:])
@@ -106,6 +111,15 @@ def loadGame():
                         playerList.append(attr[1])
 
                 print(playerList)
+                ## Use setattr for each attr in Player, but need to initialise somewhere
+
+                ## Load map data
+#                for cell in targetMap:
+#                    for thing in list(cell.items())[1:]:
+#                        if thing[0] == "contains":
+
+#                        else:
+
 
 
     return False
@@ -498,6 +512,9 @@ def startGame():
     player = res.Player(name)
     #printOut("Welcome " + name  + ".")
 
+    if len(map) == 0:
+        map = mb.generateMap()
+
     location = map[res.coordsToIndex(player.location)]
     #if location.__class__.__name__ == "Clearing":
     #    res.describeClearing(location)
@@ -506,8 +523,6 @@ def startGame():
 
     while True:
         main(player)
-
-map = mb.generateMap()
 
 #####################
 #####################
