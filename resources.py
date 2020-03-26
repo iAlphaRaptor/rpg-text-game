@@ -31,6 +31,21 @@ def get_key(val, dictionary):
 def coordsToIndex(coords):
     return coords[0]*5 + coords[1]
 
+def jsonToInstance(jsonList): ## Returns an instance of the object from a json dict
+    print(jsonList)
+    target = jsonList[0]
+    print(target, type(target))
+    if target == "Shield":
+        return Shield()
+    if target == "Weapon":
+        return Weapon()
+    if target == "Money":
+        return Money()
+    if target == "Food":
+        return Food()
+    if target == "Key":
+        return Key()
+
 def describe(obj): ## Not used with Clearing
     printOut(obj.description)
     if obj.__class__.__name__ == "Path":

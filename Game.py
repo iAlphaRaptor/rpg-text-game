@@ -54,7 +54,7 @@ def jsonToList(obj):
     values = []
     for x, y in obj.items():
         values.append(y)
-    return values[1:]
+    return values
 
 def loadGame():
     if os.stat("RPG_game_saves.json").st_size == 0:
@@ -84,24 +84,23 @@ def loadGame():
             if found == True:
                 targetPlayer = saves[saveName][0]
                 targetMap = saves[saveName][1]
-
                 playerList = []
                 for attr in list(targetPlayer.items())[1:]:
                     if attr[0] == "inventory":
                         for item in attr[1]:
                             values = jsonToList(item)
-                            add = listToObj(res.Shield(), values)
+                            add = listToObj(res.jsonToInstance(attr[1]), values)
                             playerList.append(add)
                     elif attr[0] == "weapon":
                         values = jsonToList(attr[1])
-                        add = listToObj(res.Weapon(), values)
+                        add = listToObj(res.Weapon(), values[1:])
                         playerList.append(add)
                     elif attr[0] == "shield":
                         if attr[1] == False:
                             playerList.append(False)
                         else:
                             values = jsonToList(attr[1])
-                            add = listToObj(res.Shield(), values)
+                            add = listToObj(res.Shield(), values[1:])
                             playerList.append(add)
                     else:
                         playerList.append(attr[1])
