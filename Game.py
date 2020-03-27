@@ -15,7 +15,8 @@ import resources as res
 ###################
 ###################
 
-
+player = res.Player()
+map = []
 
 CURRENCY = "Ϟ"
 
@@ -110,15 +111,20 @@ def loadGame():
                     else:
                         playerList.append(attr[1])
 
-                print(playerList)
-                ## Use setattr for each attr in Player, but need to initialise somewhere
+                player = res.Player()
+                i = 0
+                for attr in list(player.__dict__.keys())[1:]:
+                    setattr(player, attr, playerList[i])
+                    i += 1
 
                 ## Load map data
 #                for cell in targetMap:
 #                    for thing in list(cell.items())[1:]:
 #                        if thing[0] == "contains":
-
+#
 #                        else:
+
+                return True, player, map
 
 
 
@@ -158,7 +164,7 @@ def getJsonDumps(alist):
 
     return currentDict
 
-def saveGame(player):
+def saveGame(player, map):
     printOut("Enter a name for the save:")
     saveName = input(">>> ")
 
@@ -203,7 +209,9 @@ def saveGame(player):
 
     playerDict = {"class" : "player"}
     for attr, value in player.__dict__.items():
-        if attr != "inventory":
+        if attr == "defaultValues":
+            pass
+        elif attr != "inventory":
             if attr == "shield":
                 if value != False:
                     playerDict[attr] = getJsonDumps([value])
@@ -254,7 +262,7 @@ def checkDeath(player, monster):
         return "monster"
     return False
 
-def main(player):
+def main(player, map):
     move = input(">>> ").lower().strip().split(" ")
     moveNum = parse(player, move)
     location = map[res.coordsToIndex(player.location)]
@@ -314,7 +322,7 @@ def main(player):
                     else:
                         printOut("You make a valiant effort to kill the " + move[1] + " but, since there isn't one, you don't succeed.")
             elif moveNum == 10:
-                saveGame(player)
+                saveGame(player, map)
             elif moveNum == 11:
                 if location.__class__.__name__ == "Clearing":
                     res.describeClearing(location)
@@ -505,12 +513,20 @@ def main(player):
         elif check == "monster":
             currentMonster.die(player, location)
 
-def startGame():
-    #printOut("What is your name?")
-    #name = input(">>> ")
-    name = "1"
-    player = res.Player(name)
-    #printOut("Welcome " + name  + ".")
+def startGame(map, player):
+    if player == False:
+        #printOut("What is your name?")
+        #name = input(">>> ")
+        name = "1"
+        player = res.Player(name)
+
+        i = 0
+        for thing in list(player.__dict__.keys())[2:]:
+            setattr(player, thing, player.defaultValues[i])
+            i += 1
+
+        #printOut("Welcome " + name  + ".")
+
 
     if len(map) == 0:
         map = mb.generateMap()
@@ -522,7 +538,7 @@ def startGame():
     #    res.describe(location)
 
     while True:
-        main(player)
+        main(player, map)
 
 #####################
 #####################
@@ -560,15 +576,15 @@ start = False
 while not start:
     if answer == "play":
         start = True
-        startGame()
+        startGame(map, False)
     elif answer == "help":
         printOut(helpScreen, pause=0.02)
         answer = input(">>> ")
     elif answer == "load":
-        loaded = loadGame()
+        loaded, player, map = loadGame()
         if loaded:
             start = True
-            startGame()
+            startGame(map, player)
         else:
             printOut(commands, pause=0.02)
             answer = input(">>> ").lower()

@@ -426,18 +426,28 @@ class Food:
             printOut("You now have " + str(player.HP) + " health points.")
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name=False):
+        self.defaultValues = [[0,0],
+                              [Food("Apple", "Shiny fruit", ["apple"], 20, 5, 10)],
+                              0,
+                              50,
+                              100,
+                              15,
+                              15,
+                              100,
+                              Shield("Wooden Shield", "woooood", ["shield"], 2, 20, 20, 75),
+                              Weapon("Fist", "They're your hands. What more do you want to know?", ["hands", "fists", "knuckles"], 0, "Body", 0, 0)]
         self.name = name
-        self.location = [0,0]
-        self.inventory = [Weapon("Golden Sword", 1, ["golden sword"], 1, 1, 10, 150), Food("Apple", "Yum", ["apple", "fruit"], 20, 5, 25)]
-        self.inventoryWeight = 0
-        self.HP = 1
-        self.strength = 100
-        self.lethality = 15
-        self.resistance = 15
-        self.money = 100
-        self.shield = Shield("Wooden Shield", "woooood", ["shield"], 2, 20, 20, 75)
-        self.weapon = Weapon("Fist", "They're your hands. What more do you want to know?", ["hands", "fists", "knuckles"], 0, "Body", 0, 0)
+        self.location = False
+        self.inventory = False
+        self.inventoryWeight = False
+        self.HP = False
+        self.strength = False
+        self.lethality = False
+        self.resistance = False
+        self.money = False
+        self.shield = False
+        self.weapon = False
 
     def move(self, index, map):
         moved = False
