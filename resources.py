@@ -33,6 +33,7 @@ def coordsToIndex(coords):
 
 def jsonToInstance(jsonList): ## Returns an instance of the object from a json dict
     target = jsonList[0]["class"]
+
     if target == "Shield":
         return Shield()
     if target == "Weapon":
@@ -43,6 +44,14 @@ def jsonToInstance(jsonList): ## Returns an instance of the object from a json d
         return Food()
     if target == "Key":
         return Key()
+    if target == "Monster":
+        return Monster()
+    if target == "Chest":
+        return Chest()
+    if target == "Clearing":
+        return Clearing()
+    if target == "Path":
+        return Path()
 
 def describe(obj): ## Not used with Clearing
     printOut(obj.description)
@@ -213,7 +222,11 @@ class Monster:
         self.weapon = weapon
         self.aggro = aggro
         self.shield = shield
-        self.synonyms = [species.lower() ,name.lower() ,"monster"]
+
+        self.synonyms = []
+
+    def getSynonyms(self):
+        self.synonyms = [self.name.lower(), self.species.lower(), "monster"]
 
     def attack(self, player):
         if random.randint(1, 6-self.aggro) == 1:

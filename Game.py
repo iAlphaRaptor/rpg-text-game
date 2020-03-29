@@ -118,16 +118,59 @@ def loadGame():
                     i += 1
 
                 ## Load map data
-#                for cell in targetMap:
-#                    for thing in list(cell.items())[1:]:
-#                        if thing[0] == "contains":
-#
-#                        else:
+                decerealMap = []
+                for cell in targetMap:
+                    cellTemp = [list(cell.items())[0][1]]
+                    for thing in list(cell.items())[1:]:
+                        if thing[0] == "contains":
+                            if type(thing[1]) == list:
+                                temp = []
+                                for item in thing[1]:
+                                    values = jsonToList(item)
+                                    add = listToObj(res.jsonToInstance([item]), values[1:])
+                                    temp.append(add)
+                                cellTemp.append(temp)
+                            else:
+                                temp = []
+                                if len(thing[1]) != 0:
+                                    for attr, value in thing[1].items():
+                                        if attr == "selling":
+                                            sellingDict = {}
+                                            for good in value:
+                                                values = jsonToList(value[good])
+                                                add = listToObj(res.jsonToInstance([value[good]]), values[1:])
+                                                sellingDict[good] = add
+                                            temp.append(sellingDict)
+                                        elif attr == "drops":
+                                            values = jsonToList(value)
+                                            add = listToObj(res.jsonToInstance([value]), values[1:])
+                                            temp.append(add)
+                                        elif attr == "contains":
+                                            values = jsonToList(value)
+                                            add = listToObj(res.jsonToInstance([value]), values[1:])
+                                            temp.append(add)
+                                else:
+                                    cellTemp.append([])
+                            if add.__class__.__name__ == "Monster":
+                                add.getSynonyms()
+                        else:
+                            cellTemp.append(thing[1])
+                    decerealMap.append(cellTemp)
+
+                map = []
+                for deceralCell in decerealMap:
+                    if deceralCell[0] == "clearing":
+                        cellObj = res.Clearing()
+                    else:
+                        cellObj = res.Path()
+
+                    i = 1
+                    for attr in list(cellObj.__dict__.keys())[1:]:
+                        setattr(cellObj, attr, deceralCell[i])
+                        i += 1
+                    map.append(cellObj)
 
                 return True, player, map
-
-
-
     return False
 
 def getJsonDumps(alist):
