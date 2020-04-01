@@ -95,7 +95,7 @@ for i in range(5):
 for i in range(3):
     paths.append(res.Path([NPCs.pop()]))
 for i in range(2):
-    paths.append(res.Path([],codes.pop()))
+    paths.append(res.Path([], codes.pop()))
 
 
 ### Clearing Generator

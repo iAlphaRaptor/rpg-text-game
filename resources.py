@@ -78,7 +78,7 @@ def describeClearing(clearing): ## Only used with Clearing
             printOut("A " + ting.name + " lies on the floor.")
 
 class NPC:
-    def __init__(self, selling):
+    def __init__(self, selling=False):
         self.selling = selling
         self.synonyms = ["merchant", "npc", "shop", "man", "person", "woman"]
         self.description = "A humble merchant, offering to buy or sell food, weapons and armour."

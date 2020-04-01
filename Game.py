@@ -46,8 +46,15 @@ def parse(player, commands):
 
 def listToObj(obj, attrs):
     i = 0
+    if obj.__class__.__name__ == "Monster":
+        for x in attrs:
+            print(x, type(x))
+            print("\n")
     for attr, value in obj.__dict__.items():
-        setattr(obj, attr, attrs[i])
+        if type(attrs[i]) == int:
+            setattr(obj, attr, int(attrs[i]))
+        else:
+            setattr(obj, attr, attrs[i])
         i += 1
     return obj
 
@@ -149,6 +156,21 @@ def loadGame():
                                             values = jsonToList(value)
                                             add = listToObj(res.jsonToInstance([value]), values[1:])
                                             temp.append(add)
+                                        else:
+                                            temp.append(value)
+
+                                    if temp[0] == "Monster":
+                                        adding = res.Monster()                                                
+                                    elif temp[0] == "Chest":
+                                        adding = res.Chest()
+                                    else:
+                                        adding = res.NPC()
+
+                                    i = 1
+                                    for attr in list(adding.__dict__.keys())[1:]:
+                                        setattr(adding, attr, temp[i])
+                                        i += 1
+                                    cellTemp.append([adding])
                                 else:
                                     cellTemp.append([])
                             if add.__class__.__name__ == "Monster":
@@ -158,15 +180,17 @@ def loadGame():
                     decerealMap.append(cellTemp)
 
                 map = []
-                for deceralCell in decerealMap:
-                    if deceralCell[0] == "clearing":
+                for decerealCell in decerealMap:
+                    if decerealCell[0] == "clearing":
                         cellObj = res.Clearing()
                     else:
                         cellObj = res.Path()
 
                     i = 1
-                    for attr in list(cellObj.__dict__.keys())[1:]:
-                        setattr(cellObj, attr, deceralCell[i])
+                    #print(list(cellObj.__dict__.keys()), "keys")
+                    #print(decerealCell, "valeues")
+                    for attr in list(cellObj.__dict__.keys()):
+                        setattr(cellObj, attr, decerealCell[i])
                         i += 1
                     map.append(cellObj)
 
