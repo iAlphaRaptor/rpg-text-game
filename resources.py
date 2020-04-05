@@ -353,6 +353,7 @@ class Chest:
             printOut("This chest is not locked.")
         else:
             if self.unlockCode != False:
+                print(self.unlockCode)
                 printOut("The padlock on this chest must be unlocked with a code.\nWhat is the code?")
                 answer = input(">>>")
                 try:
@@ -378,12 +379,13 @@ class Chest:
                         self.unlock(player, location)
             elif self.unlockKey != False:
                 printOut("The padlock on this chest must be unlocked with the " + self.unlockKey.name + ".")
-                if self.unlockKey in player.inventory:
+                ##if self.unlockKey in player.inventory:
+                if True:
                     printOut("Unlock the chest?")
-                    answer == input(">>> ").lower()
+                    answer = input(">>> ").lower()
                     if answer == "yes" or "y":
                         self.locked = False
-                        printOut("Correct, the padlock on the chest clicks open.")
+                        printOut("The padlock on the chest clicks open.")
                         self.open()
                     else:
                         printOut("Come back later if you do.")
@@ -452,7 +454,7 @@ class Player:
                               Weapon("Fist", "They're your hands. What more do you want to know?", ["hands", "fists", "knuckles"], 0, "Body", 0, 0)]
         self.name = name
         self.location = False
-        self.inventory = False
+        self.inventory = [Key("Gold Key", 5, 50), Key("Silver Key", 5, 50), Key("Bronze Key", 5, 50)]
         self.inventoryWeight = False
         self.HP = False
         self.strength = False

@@ -46,10 +46,10 @@ def parse(player, commands):
 
 def listToObj(obj, attrs):
     i = 0
-    if obj.__class__.__name__ == "Monster":
-        for x in attrs:
-            print(x, type(x))
-            print("\n")
+    #if obj.__class__.__name__ == "Monster":
+        #for x in attrs:
+        #    print(x, type(x))
+        #    print("\n")
     for attr, value in obj.__dict__.items():
         if type(attrs[i]) == int:
             setattr(obj, attr, int(attrs[i]))
@@ -130,17 +130,10 @@ def loadGame():
                     cellTemp = [list(cell.items())[0][1]]
                     for thing in list(cell.items())[1:]:
                         if thing[0] == "contains":
-                            if type(thing[1]) == list:
-                                temp = []
-                                for item in thing[1]:
-                                    values = jsonToList(item)
-                                    add = listToObj(res.jsonToInstance([item]), values[1:])
-                                    temp.append(add)
-                                cellTemp.append(temp)
-                            else:
-                                temp = []
-                                if len(thing[1]) != 0:
-                                    for attr, value in thing[1].items():
+                            temp = []
+                            for item in thing[1]:
+                                if len(item) != 0:
+                                    for attr, value in item.items():
                                         if attr == "selling":
                                             sellingDict = {}
                                             for good in value:
@@ -160,21 +153,43 @@ def loadGame():
                                             temp.append(value)
 
                                     if temp[0] == "Monster":
-                                        adding = res.Monster()                                                
+                                        adding = res.Monster()
                                     elif temp[0] == "Chest":
                                         adding = res.Chest()
                                     else:
                                         adding = res.NPC()
 
                                     i = 1
-                                    for attr in list(adding.__dict__.keys())[1:]:
+                                    for attr in list(adding.__dict__.keys()):
                                         setattr(adding, attr, temp[i])
                                         i += 1
+
+
+                                    if temp[0] == "Monster":
+                                        adding.getSynonyms()
+
+                                        weapon = adding.weapon
+                                        values = jsonToList(weapon)
+                                        weaponObj = listToObj(res.Weapon(), values)
+                                        adding.weapon = weaponObj
+
+                                        shield = adding.shield
+                                        if shield != False:
+                                            values = jsonToList(shield)
+                                            shieldObj = listToObj(res.Shield(), values)
+                                            adding.shield = shieldObj
+                                    elif temp[0] == "Chest":
+                                        print("chest")
+                                        key = adding.unlockKey
+                                        print(key)
+                                        if key != False:
+                                            values = jsonToList(key)
+                                            keyObj = listToObj(res.Key(), values)
+                                            adding.unlockKey = keyObj
+                                        print(adding.unlockKey)
                                     cellTemp.append([adding])
                                 else:
                                     cellTemp.append([])
-                            if add.__class__.__name__ == "Monster":
-                                add.getSynonyms()
                         else:
                             cellTemp.append(thing[1])
                     decerealMap.append(cellTemp)
@@ -187,15 +202,13 @@ def loadGame():
                         cellObj = res.Path()
 
                     i = 1
-                    #print(list(cellObj.__dict__.keys()), "keys")
-                    #print(decerealCell, "valeues")
                     for attr in list(cellObj.__dict__.keys()):
                         setattr(cellObj, attr, decerealCell[i])
                         i += 1
                     map.append(cellObj)
 
                 return True, player, map
-    return False
+    return False, "hi", "bye"
 
 def getJsonDumps(alist):
     if len(alist) == 0:
@@ -264,13 +277,13 @@ def saveGame(player, map):
             else:
                 if len(value) == 1:
                     jsonDumps = getJsonDumps(value)
-                    mapDict["contains"] = jsonDumps
+                    mapDict["contains"] = [jsonDumps]
                 elif len(value) == 2:
                     jsonDump1 = getJsonDumps([value[0]])
                     jsonDump2 = getJsonDumps([value[1]])
                     mapDict["contains"] = [jsonDump1, jsonDump2]
                 else:
-                    mapDict["contains"] = getJsonDumps(value)
+                    mapDict["contains"] = [getJsonDumps(value)]
 
         jsonMap.append(mapDict)
 
